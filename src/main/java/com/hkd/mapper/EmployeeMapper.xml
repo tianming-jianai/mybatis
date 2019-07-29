@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.hkd.mapper.EmployeeMapper">
+    <resultMap id="myEmp" type="com.hkd.entity.Employee">
+        <id property="id" column="id"/>
+        <result property="lastName" column="last_name"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <!--场景二：查出Employee的同时查询员工对应的部门
+        联合查询：级联属性封装结果集
+    -->
+    <resultMap id="myEmp2" type="com.hkd.entity.Employee">
+        <id property="id" column="id"/>
+        <result property="lastName" column="last_name"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <result property="dept.id" column="id"/>
+        <result property="dept.deptName" column="dept_name"/>
+    </resultMap>
+
+
+    <resultMap id="myEmp3" type="com.hkd.entity.Employee">
+        <id property="id" column="id"/>
+        <result property="lastName" column="last_name"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <!--
+            assocation:可以指定联合的javaBean对象
+            property="dept"，指定那个属性是联合查询的对象
+            jdbcType：指定这个属性对象的类型，不能省略
+        -->
+        <association property="dept" javaType="com.hkd.entity.Department">
+            <result property="id" column="id"/>
+            <result property="deptName" column="dept_name"/>
+        </association>
+    </resultMap>
+
+    <!--使用assocation分步查询-->
+
+
+    <select id="getEmpById" resultMap="myEmp" parameterType="integer">
+        select * from tbl_employee where id=#{id}
+    </select>
+
+    <select id="getEmpById2" resultMap="myEmp2" parameterType="integer">
+        select e.id,e.last_name,e.gender,e.email,d.dept_name from tbl_employee e,tbl_department d
+        where e.dept_id=d.id and e.id=#{id}
+    </select>
+
+    <select id="getEmpById3" resultMap="myEmp3" parameterType="integer">
+        select e.id,e.last_name,e.gender,e.email,d.dept_name from tbl_employee e,tbl_department d
+        where e.dept_id=d.id and e.id=#{id}
+    </select>
+</mapper>
